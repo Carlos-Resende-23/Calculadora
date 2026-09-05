@@ -2,8 +2,11 @@ let runningTotal = 0
 let buffer = "0"
 let previousOperator = null
 
+const HISTORY_STORAGE_KEY = "calculator-history"
+
 const screen = document.querySelector(".screen")
 const historyList = document.querySelector("#history")
+const clearHistoryButton = document.querySelector("#clear-history")
 
 function ButtonClick(value) {
   if (isNaN(value)) {
@@ -15,15 +18,46 @@ function ButtonClick(value) {
 }
 
 function addHistoryEntry(expression) {
-  const emptyItem = historyList.querySelector(".history-empty")
-  if (emptyItem) {
-    emptyItem.remove()
+  const history = getHistory()
+  history.unshift(expression)
+  saveHistory(history)
+  renderHistory(history)
+}
+
+function getHistory() {
+  try {
+    return JSON.parse(localStorage.getItem(HISTORY_STORAGE_KEY)) || []
+  } catch {
+    return []
+  }
+}
+
+function saveHistory(history) {
+  localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history))
+}
+
+function renderHistory(history) {
+  historyList.innerHTML = ""
+
+  if (history.length === 0) {
+    const emptyItem = document.createElement("li")
+    emptyItem.className = "history-empty"
+    emptyItem.textContent = "Nenhum cálculo ainda."
+    historyList.append(emptyItem)
+    return
   }
 
-  const item = document.createElement("li")
-  item.className = "history-item"
-  item.textContent = expression
-  historyList.prepend(item)
+  history.forEach((expression) => {
+    const item = document.createElement("li")
+    item.className = "history-item"
+    item.textContent = expression
+    historyList.append(item)
+  })
+}
+
+function clearHistory() {
+  localStorage.removeItem(HISTORY_STORAGE_KEY)
+  renderHistory([])
 }
 
 function handleSymbol(symbol) {
@@ -104,6 +138,8 @@ function handleNumber(numberString) {
 }
 
 function init() {
+  renderHistory(getHistory())
+
   document
     .querySelector(".calc-buttons")
     .addEventListener("click", function (event) {
@@ -115,6 +151,8 @@ function init() {
 
       ButtonClick(button.innerText)
     })
+
+  clearHistoryButton.addEventListener("click", clearHistory)
 }
 
 init()
