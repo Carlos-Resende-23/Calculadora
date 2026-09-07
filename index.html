@@ -9,6 +9,32 @@
   <body>
     <h1>CALCULADORA</h1>
 
+    <section id="cotacao-dolar" class="cotacao is-loading" aria-live="polite">
+      <div class="cotacao-heading">
+        <div>
+          <p class="cotacao-kicker">Mercado em tempo real</p>
+          <h2>Cotação do dólar</h2>
+        </div>
+        <button
+          id="atualizar-cotacao"
+          class="cotacao-refresh"
+          type="button"
+          aria-label="Atualizar cotação"
+          title="Atualizar cotação"
+        >
+          ↻
+        </button>
+      </div>
+      <div class="cotacao-value-row">
+        <strong id="valor-cotacao">--</strong>
+        <span>BRL por 1 USD</span>
+      </div>
+      <p id="variacao-cotacao" class="cotacao-change">
+        Buscando dados do mercado...
+      </p>
+      <p id="atualizacao-cotacao" class="cotacao-updated">Atualizando agora</p>
+    </section>
+
     <div class="calculator-layout">
       <div class="wrapper">
         <section class="screen">0</section>

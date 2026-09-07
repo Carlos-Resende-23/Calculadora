@@ -23,6 +23,117 @@ body {
   padding: 30px 20px;
 }
 
+.cotacao {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  border-radius: 18px;
+  box-shadow: 0 12px 30px rgba(35, 35, 35, 0.14);
+  color: #232323;
+  max-width: 400px;
+  padding: 18px 20px;
+  text-align: left;
+  width: 100%;
+}
+
+.cotacao-heading,
+.cotacao-value-row {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.cotacao-kicker {
+  color: #667085;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin-bottom: 3px;
+  text-transform: uppercase;
+}
+
+.cotacao h2 {
+  font-size: 20px;
+  line-height: 1.15;
+}
+
+.cotacao-refresh {
+  align-items: center;
+  background: #232323;
+  border: 0;
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  font-size: 23px;
+  height: 38px;
+  justify-content: center;
+  line-height: 1;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
+  width: 38px;
+}
+
+.cotacao-refresh:hover {
+  background: #0f766e;
+  transform: rotate(35deg);
+}
+
+.cotacao-value-row {
+  align-items: baseline;
+  border-bottom: 1px solid rgba(35, 35, 35, 0.12);
+  gap: 12px;
+  margin: 18px 0 10px;
+  padding-bottom: 12px;
+}
+
+.cotacao-value-row strong {
+  font-size: 31px;
+  letter-spacing: 0;
+}
+
+.cotacao-value-row span {
+  color: #667085;
+  font-size: 12px;
+}
+
+.cotacao-change,
+.cotacao-updated {
+  font-size: 13px;
+}
+
+.cotacao-change {
+  color: #667085;
+  font-weight: 700;
+}
+
+.cotacao-change.is-positive {
+  color: #0f766e;
+}
+
+.cotacao-change.is-negative {
+  color: #b42318;
+}
+
+.cotacao-updated {
+  color: #667085;
+  margin-top: 5px;
+}
+
+.cotacao.is-loading .cotacao-refresh {
+  animation: spin 0.9s linear infinite;
+}
+
+.cotacao.has-error {
+  border-color: rgba(180, 35, 24, 0.35);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .calculator-layout {
   display: flex;
   align-items: flex-start;
@@ -192,6 +303,14 @@ footer {
 }
 
 @media (max-width: 760px) {
+  body {
+    padding: 22px 14px;
+  }
+
+  .cotacao {
+    max-width: 400px;
+  }
+
   .calculator-layout {
     flex-direction: column;
     align-items: center;

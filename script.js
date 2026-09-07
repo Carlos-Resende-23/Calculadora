@@ -7,6 +7,124 @@ const HISTORY_STORAGE_KEY = "calculator-history"
 const screen = document.querySelector(".screen")
 const historyList = document.querySelector("#history")
 const clearHistoryButton = document.querySelector("#clear-history")
+const cotacaoElement = document.querySelector("#cotacao-dolar")
+const valorCotacaoElement = document.querySelector("#valor-cotacao")
+const variacaoCotacaoElement = document.querySelector("#variacao-cotacao")
+const atualizacaoCotacaoElement = document.querySelector("#atualizacao-cotacao")
+const atualizarCotacaoButton = document.querySelector("#atualizar-cotacao")
+// ==========================================
+// ELEMENTOS DO HTML
+// ==========================================
+
+// Seu visor usa classe "screen", não ID
+const visor = document.querySelector(".screen")
+
+// O botão converter - você precisa criar um no HTML ou usar um existente
+// Vou criar um exemplo com um botão que você vai adicionar
+const btnConverter = document.getElementById("btn-converter")
+
+// ==========================================
+// API - BUSCAR COTAÇÃO
+// ==========================================
+
+const API_URL = "https://economia.awesomeapi.com.br/json/last/USD-BRL"
+
+async function buscarDadosCotacao() {
+  try {
+    const resposta = await fetch(API_URL)
+    return await resposta.json()
+  } catch (erro) {
+    console.error("❌ Erro ao buscar cotação:", erro)
+    return null
+  }
+}
+
+async function buscarCotacaoDolar() {
+  const dados = await buscarDadosCotacao()
+  return dados ? Number.parseFloat(dados.USDBRL.bid) : null
+}
+
+// ==========================================
+// ATUALIZAR COTAÇÃO NA TELA
+// ==========================================
+
+async function atualizarCotacaoNaTela() {
+  if (!cotacaoElement) {
+    return
+  }
+
+  const dados = await buscarDadosCotacao()
+  const cotacao = dados ? Number.parseFloat(dados.USDBRL.bid) : null
+
+  if (cotacao) {
+    const variacao = Number.parseFloat(dados.USDBRL.pctChange)
+    const variacaoFormatada = Number.isNaN(variacao)
+      ? "Variação indisponível"
+      : `${variacao >= 0 ? "▲" : "▼"} ${Math.abs(variacao).toFixed(2).replace(".", ",")}% hoje`
+
+    valorCotacaoElement.textContent = `R$ ${cotacao.toFixed(2).replace(".", ",")}`
+    variacaoCotacaoElement.textContent = variacaoFormatada
+    variacaoCotacaoElement.classList.toggle("is-positive", variacao >= 0)
+    variacaoCotacaoElement.classList.toggle("is-negative", variacao < 0)
+    atualizacaoCotacaoElement.textContent = `Atualizado às ${new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}`
+    cotacaoElement.classList.remove("is-loading", "has-error")
+  } else {
+    valorCotacaoElement.textContent = "Indisponível"
+    variacaoCotacaoElement.textContent =
+      "Não foi possível consultar o mercado agora."
+    atualizacaoCotacaoElement.textContent = "Tente novamente em instantes"
+    cotacaoElement.classList.remove("is-loading")
+    cotacaoElement.classList.add("has-error")
+  }
+}
+
+atualizarCotacaoButton?.addEventListener("click", atualizarCotacaoNaTela)
+
+// ==========================================
+// BOTÃO CONVERTER
+// ==========================================
+
+if (btnConverter) {
+  btnConverter.addEventListener("click", async () => {
+    // Pega o valor do visor (texto)
+    const valorTexto = visor.textContent
+    console.log("📝 Valor no visor:", valorTexto)
+
+    // Remove espaços e converte para número
+    const valorEmReais = parseFloat(valorTexto.replace(/,/g, ""))
+
+    if (isNaN(valorEmReais) || valorEmReais === 0) {
+      alert("⚠️ Digite um número válido primeiro!")
+      return
+    }
+
+    const cotacao = await buscarCotacaoDolar()
+    if (cotacao) {
+      const valorEmDolar = (valorEmReais / cotacao).toFixed(2)
+      alert(
+        `💵 ${valorEmReais} BRL = $${valorEmDolar} USD\n💰 Cotação: R$ ${cotacao.toFixed(2)}`,
+      )
+    } else {
+      alert("❌ Erro ao buscar cotação. Tente novamente.")
+    }
+  })
+} else {
+  console.log(
+    "ℹ️ Botão converter não encontrado. Adicione <button id='btn-converter'>Converter</button> no HTML",
+  )
+}
+
+// ==========================================
+// INICIALIZAÇÃO
+// ==========================================
+
+// Atualizar a cada 5 minutos
+setInterval(atualizarCotacaoNaTela, 300000) // 5 minutos
+
+// Carregar ao iniciar
+atualizarCotacaoNaTela()
+
+console.log("🚀 Calculadora iniciada!")
 
 function ButtonClick(value) {
   if (isNaN(value)) {
