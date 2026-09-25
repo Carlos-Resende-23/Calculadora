@@ -88,8 +88,10 @@ body {
 }
 
 .cotacao-value-row strong {
-  font-size: 31px;
+  font-size: 40px;
+  font-weight: 800;
   letter-spacing: 0;
+  line-height: 1;
 }
 
 .cotacao-value-row span {
@@ -293,8 +295,15 @@ body {
 }
 
 h1 {
-  font-size: 24px;
+  color: #fff;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(28px, 4vw, 38px);
+  font-weight: bold;
+  letter-spacing: 0.18em;
+  line-height: 1;
   margin-bottom: 20px;
+  padding-left: 0.18em;
+  text-shadow: 0 2px 0 rgba(63, 61, 61, 0.6);
 }
 
 footer {
