@@ -13,14 +13,24 @@ html {
 
 body {
   align-items: center;
-  background: linear-gradient(320deg, green, blue, yellow);
+  background: linear-gradient(320deg, #0f766e, #1d4ed8, #eab308);
   display: flex;
   flex-direction: column;
-  font-family: "dosis", sans-serif;
+  font-family: "Dosis", sans-serif;
   min-height: 100vh;
   justify-content: center;
   gap: 20px;
   padding: 30px 20px;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button:focus-visible {
+  outline: 3px solid #facc15;
+  outline-offset: 2px;
 }
 
 .cotacao {
@@ -68,9 +78,7 @@ body {
   height: 38px;
   justify-content: center;
   line-height: 1;
-  transition:
-    transform 0.2s ease,
-    background-color 0.2s ease;
+  transition: transform 0.2s ease, background-color 0.2s ease;
   width: 38px;
 }
 
@@ -137,22 +145,24 @@ body {
 }
 
 .calculator-layout {
-  display: flex;
   align-items: flex-start;
+  display: flex;
+  flex-wrap: wrap;
   gap: 24px;
+  justify-content: center;
 }
 
 .wrapper {
   backdrop-filter: blur(5.5px);
   -webkit-backdrop-filter: blur(5.5px);
+  background: rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.34);
   border-radius: 16px;
   box-shadow: 0 4px 30px rgba(35, 35, 35, 0.1);
   color: #232323;
-  background: rgba(255, 255, 255, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.34);
-  width: 400px;
   min-height: 540px;
   padding: 20px 35px;
+  width: 400px;
 }
 
 .screen {
@@ -163,12 +173,15 @@ body {
   border-radius: 16px;
   box-shadow: 0 4px 30px rgba(35, 35, 35, 0.1);
   color: #232323;
-  font-size: 35px;
-  overflow: auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  font-size: clamp(30px, 3vw, 35px);
+  min-height: 90px;
+  overflow-wrap: anywhere;
   padding: 20px;
   text-align: right;
   width: 100%;
-  min-height: 80px;
 }
 
 .calc-button-row {
@@ -185,15 +198,13 @@ body {
   border-radius: 16px;
   box-shadow: 0 4px 30px rgba(35, 35, 35, 0.1);
   color: #232323;
+  cursor: pointer;
   flex: 1;
   font-family: inherit;
   font-size: 24px;
   height: 65px;
   margin: 0 6px;
-  cursor: pointer;
-  transition:
-    transform 0.15s ease,
-    background-color 0.15s ease;
+  transition: transform 0.15s ease, background-color 0.15s ease;
 }
 
 .calc-button:hover {
@@ -226,6 +237,16 @@ body {
   flex: 3.4;
 }
 
+.converter-button {
+  background: #1d4ed8;
+  color: #fff;
+  width: 100%;
+}
+
+.converter-button:hover {
+  background: #1e40af;
+}
+
 .history-panel {
   backdrop-filter: blur(5.5px);
   -webkit-backdrop-filter: blur(5.5px);
@@ -234,9 +255,9 @@ body {
   border-radius: 16px;
   box-shadow: 0 4px 30px rgba(35, 35, 35, 0.1);
   color: #232323;
-  width: 260px;
   min-height: 540px;
   padding: 20px 18px;
+  width: 260px;
 }
 
 .history-panel h2 {
@@ -267,10 +288,10 @@ body {
 }
 
 .history-list {
-  list-style: none;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  list-style: none;
   max-height: 440px;
   overflow-y: auto;
 }
@@ -279,9 +300,9 @@ body {
 .history-empty {
   background: rgba(255, 255, 255, 0.45);
   border-radius: 12px;
-  padding: 12px 14px;
   font-size: 16px;
   line-height: 1.4;
+  padding: 12px 14px;
 }
 
 .history-item {
@@ -298,6 +319,23 @@ h1 {
   color: #fff;
   font-family: Georgia, "Times New Roman", serif;
   font-size: clamp(28px, 4vw, 38px);
+}
+
+footer {
+  color: rgba(255, 255, 255, 0.9);
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .wrapper,
+  .history-panel {
+    width: min(100%, 400px);
+  }
+
+  .calculator-layout {
+    width: 100%;
+  }
+}
   font-weight: bold;
   letter-spacing: 0.18em;
   line-height: 1;
