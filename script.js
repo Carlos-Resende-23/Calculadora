@@ -28,6 +28,14 @@ function updateScreen() {
   )
 }
 
+function setErrorState() {
+  calculatorState.displayValue = "Erro"
+  calculatorState.firstOperand = null
+  calculatorState.operator = null
+  calculatorState.waitingForNextValue = true
+  updateScreen()
+}
+
 function resetCalculator() {
   calculatorState.displayValue = "0"
   calculatorState.firstOperand = null
@@ -46,6 +54,13 @@ function formatResult(value) {
 }
 
 function applyNumber(value) {
+  if (calculatorState.displayValue === "Erro") {
+    calculatorState.displayValue = "0"
+    calculatorState.firstOperand = null
+    calculatorState.operator = null
+    calculatorState.waitingForNextValue = false
+  }
+
   if (calculatorState.waitingForNextValue) {
     calculatorState.displayValue = "0"
     calculatorState.waitingForNextValue = false
@@ -72,6 +87,10 @@ function applyNumber(value) {
 }
 
 function handleOperator(nextOperator) {
+  if (calculatorState.displayValue === "Erro") {
+    return
+  }
+
   const currentValue = Number.parseFloat(calculatorState.displayValue)
 
   if (!Number.isFinite(currentValue)) {
@@ -86,14 +105,20 @@ function handleOperator(nextOperator) {
   if (calculatorState.firstOperand === null) {
     calculatorState.firstOperand = currentValue
   } else if (calculatorState.operator) {
-    const result = calculate(
-      calculatorState.firstOperand,
-      currentValue,
-      calculatorState.operator,
-    )
+    try {
+      const result = calculate(
+        calculatorState.firstOperand,
+        currentValue,
+        calculatorState.operator,
+      )
 
-    calculatorState.displayValue = formatResult(result)
-    calculatorState.firstOperand = result
+      calculatorState.displayValue = formatResult(result)
+      calculatorState.firstOperand = result
+    } catch (error) {
+      setErrorState()
+      console.error(error)
+      return
+    }
   }
 
   calculatorState.operator = nextOperator
@@ -120,6 +145,10 @@ function calculate(leftValue, rightValue, operator) {
 }
 
 function evaluateExpression() {
+  if (calculatorState.displayValue === "Erro") {
+    return
+  }
+
   if (
     calculatorState.operator === null ||
     calculatorState.firstOperand === null ||
@@ -147,16 +176,17 @@ function evaluateExpression() {
     calculatorState.waitingForNextValue = true
     updateScreen()
   } catch (error) {
-    calculatorState.displayValue = "Erro"
-    calculatorState.firstOperand = null
-    calculatorState.operator = null
-    calculatorState.waitingForNextValue = true
-    updateScreen()
+    setErrorState()
     console.error(error)
   }
 }
 
 function applyBackspace() {
+  if (calculatorState.displayValue === "Erro") {
+    resetCalculator()
+    return
+  }
+
   if (calculatorState.waitingForNextValue) {
     return
   }
@@ -203,6 +233,10 @@ function handleCalculatorAction(value) {
 }
 
 function addHistoryEntry(expression) {
+  if (typeof expression !== "string" || expression.trim() === "") {
+    return
+  }
+
   const history = getHistory()
   history.unshift(expression)
   saveHistory(history)
@@ -211,22 +245,35 @@ function addHistoryEntry(expression) {
 
 function getHistory() {
   try {
-    return JSON.parse(localStorage.getItem(HISTORY_STORAGE_KEY)) || []
+    const storedHistory = JSON.parse(localStorage.getItem(HISTORY_STORAGE_KEY))
+
+    if (!Array.isArray(storedHistory)) {
+      return []
+    }
+
+    return storedHistory.filter(
+      (item) => typeof item === "string" && item.trim() !== "",
+    )
   } catch {
     return []
   }
 }
 
 function saveHistory(history) {
-  localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history))
+  try {
+    localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history))
+  } catch {
+    console.warn("Não foi possível salvar o histórico no navegador.")
+  }
 }
 
 function renderHistory(history) {
   if (!historyList) return
 
+  const safeHistory = Array.isArray(history) ? history : []
   historyList.innerHTML = ""
 
-  if (history.length === 0) {
+  if (safeHistory.length === 0) {
     const emptyItem = document.createElement("li")
     emptyItem.className = "history-empty"
     emptyItem.textContent = "Nenhum cálculo ainda."
@@ -234,7 +281,7 @@ function renderHistory(history) {
     return
   }
 
-  history.forEach((expression) => {
+  safeHistory.forEach((expression) => {
     const item = document.createElement("li")
     item.className = "history-item"
     item.textContent = expression
@@ -243,7 +290,12 @@ function renderHistory(history) {
 }
 
 function clearHistory() {
-  localStorage.removeItem(HISTORY_STORAGE_KEY)
+  try {
+    localStorage.removeItem(HISTORY_STORAGE_KEY)
+  } catch {
+    console.warn("Não foi possível limpar o histórico no navegador.")
+  }
+
   renderHistory([])
 }
 

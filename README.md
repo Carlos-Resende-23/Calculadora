@@ -8,6 +8,14 @@ Uma calculadora feita com HTML, CSS e JavaScript, com histórico de operações 
 - Entrada por botões ou pelo teclado
 - Histórico de cálculos salvo no navegador, com opção para limpar
 - Cotação atual do dólar em reais e conversão de BRL para USD
+- Validação e tratamento de erros para operações inválidas, divisão por zero e falhas na consulta de cotação
+
+## Melhorias de estabilidade
+
+- Bloqueio de operações incompletas e entradas inválidas
+- Exibição de mensagem de erro em caso de divisão por zero ou cálculo impossível
+- Recuperação segura ao limpar ou carregar o histórico salvo no navegador
+- Mensagens claras quando a cotação do dólar não está disponível
 
 ## Tecnologias
 
