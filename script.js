@@ -1,4 +1,5 @@
 const HISTORY_STORAGE_KEY = "calculator-history"
+const THEME_STORAGE_KEY = "calculator-theme"
 const API_URL = "https://economia.awesomeapi.com.br/json/last/USD-BRL"
 
 const screen = document.querySelector(".screen")
@@ -9,6 +10,7 @@ const valorCotacaoElement = document.querySelector("#valor-cotacao")
 const variacaoCotacaoElement = document.querySelector("#variacao-cotacao")
 const atualizacaoCotacaoElement = document.querySelector("#atualizacao-cotacao")
 const atualizarCotacaoButton = document.querySelector("#atualizar-cotacao")
+const themeToggleButton = document.querySelector("#alternar-tema")
 const btnConverter = document.getElementById("btn-converter")
 
 const calculatorState = {
@@ -320,6 +322,10 @@ function bindCalculatorEvents() {
     atualizarCotacaoButton.addEventListener("click", atualizarCotacaoNaTela)
   }
 
+  if (themeToggleButton) {
+    themeToggleButton.addEventListener("click", toggleTheme)
+  }
+
   document.addEventListener("keydown", (event) => {
     const key = event.key
 
@@ -360,6 +366,44 @@ function bindCalculatorEvents() {
       resetCalculator()
     }
   })
+}
+
+function applyTheme(theme) {
+  const isUsaTheme = theme === "usa"
+  document.body.dataset.theme = isUsaTheme ? "usa" : "brasil"
+
+  if (themeToggleButton) {
+    const nextTheme = isUsaTheme ? "Brasil" : "Estados Unidos"
+    themeToggleButton.textContent = isUsaTheme ? "🇧🇷" : "🇺🇸"
+    themeToggleButton.setAttribute("aria-label", `Ativar tema ${nextTheme}`)
+    themeToggleButton.title = `Ativar tema ${nextTheme}`
+  }
+}
+
+function toggleTheme() {
+  const nextTheme = document.body.dataset.theme === "usa" ? "brasil" : "usa"
+  applyTheme(nextTheme)
+
+  try {
+    localStorage.setItem(THEME_STORAGE_KEY, nextTheme)
+  } catch {
+    console.warn("Não foi possível salvar o tema no navegador.")
+  }
+}
+
+function loadTheme() {
+  let theme = "brasil"
+
+  try {
+    const storedTheme = localStorage.getItem(THEME_STORAGE_KEY)
+    if (storedTheme === "brasil" || storedTheme === "usa") {
+      theme = storedTheme
+    }
+  } catch {
+    console.warn("Não foi possível carregar o tema salvo no navegador.")
+  }
+
+  applyTheme(theme)
 }
 
 async function buscarDadosCotacao() {
@@ -471,6 +515,7 @@ async function converterParaDolar() {
 }
 
 function init() {
+  loadTheme()
   renderHistory(getHistory())
   updateScreen()
   bindCalculatorEvents()

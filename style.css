@@ -3,6 +3,17 @@ html {
   min-height: 100%;
 }
 
+:root {
+  --page-gradient: linear-gradient(320deg, #0b4e05, #1d4ed8, #e6ea08);
+  --accent: #1d4ed8;
+  --accent-hover: #1e40af;
+  --action: #232323;
+  --action-hover: #0f766e;
+  --operator-bg: #232323;
+  --operator-hover: rgba(35, 35, 35, 0.9);
+  --focus-color: #facc15;
+}
+
 *,
 *::before,
 *::after {
@@ -13,7 +24,7 @@ html {
 
 body {
   align-items: center;
-  background: linear-gradient(320deg, #0b4e05, #1d4ed8, #e6ea08);
+  background: var(--page-gradient);
   display: flex;
   flex-direction: column;
   font-family: "Dosis", sans-serif;
@@ -23,13 +34,23 @@ body {
   padding: 30px 20px;
 }
 
+body[data-theme="usa"] {
+  --page-gradient: linear-gradient(320deg, #0a3161, #b31942, #1d3557);
+  --accent: #b31942;
+  --accent-hover: #8c1631;
+  --action: #0a3161;
+  --action-hover: #b31942;
+  --operator-bg: #0a3161;
+  --operator-hover: #b31942;
+}
+
 button,
 input {
   font: inherit;
 }
 
 button:focus-visible {
-  outline: 3px solid #facc15;
+  outline: 3px solid var(--focus-color);
   outline-offset: 2px;
 }
 
@@ -52,6 +73,12 @@ button:focus-visible {
   justify-content: space-between;
 }
 
+.cotacao-actions {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
 .cotacao-kicker {
   color: #667085;
   font-size: 11px;
@@ -68,7 +95,7 @@ button:focus-visible {
 
 .cotacao-refresh {
   align-items: center;
-  background: #232323;
+  background: var(--action);
   border: 0;
   border-radius: 50%;
   color: #fff;
@@ -78,15 +105,34 @@ button:focus-visible {
   height: 38px;
   justify-content: center;
   line-height: 1;
+  width: 38px;
+}
+
+.cotacao-refresh:hover {
+  background: var(--action-hover);
+  transform: rotate(35deg);
+}
+
+.theme-toggle {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(35, 35, 35, 0.14);
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  font-size: 20px;
+  height: 38px;
+  justify-content: center;
+  line-height: 1;
   transition:
     transform 0.2s ease,
     background-color 0.2s ease;
   width: 38px;
 }
 
-.cotacao-refresh:hover {
-  background: #0f766e;
-  transform: rotate(35deg);
+.theme-toggle:hover {
+  background: #fff;
+  transform: scale(1.08);
 }
 
 .cotacao-value-row {
@@ -220,12 +266,12 @@ button:focus-visible {
 }
 
 .calc-button:last-child {
-  background: #232323;
+  background: var(--operator-bg);
   color: #fff;
 }
 
 .calc-button:last-child:hover {
-  background-color: rgba(35, 35, 35, 0.9);
+  background-color: var(--operator-hover);
 }
 
 .zero-button {
@@ -237,13 +283,13 @@ button:focus-visible {
 }
 
 .converter-button {
-  background: #1d4ed8;
+  background: var(--accent);
   color: #fff;
   width: 100%;
 }
 
 .converter-button:hover {
-  background: #1e40af;
+  background: var(--accent-hover);
 }
 
 .history-panel {
