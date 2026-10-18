@@ -292,6 +292,27 @@ button:focus-visible {
   background: var(--accent-hover);
 }
 
+.conversion-result {
+  background: rgba(255, 255, 255, 0.55);
+  border-radius: 12px;
+  color: #232323;
+  font-size: 15px;
+  line-height: 1.4;
+  margin: 12px 6px 0;
+  min-height: 44px;
+  padding: 12px 14px;
+  overflow-wrap: anywhere;
+}
+
+.conversion-result.is-error {
+  color: #b42318;
+}
+
+#btn-converter:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
 .history-panel {
   backdrop-filter: blur(5.5px);
   -webkit-backdrop-filter: blur(5.5px);

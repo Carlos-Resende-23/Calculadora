@@ -12,6 +12,7 @@ const atualizacaoCotacaoElement = document.querySelector("#atualizacao-cotacao")
 const atualizarCotacaoButton = document.querySelector("#atualizar-cotacao")
 const themeToggleButton = document.querySelector("#alternar-tema")
 const btnConverter = document.getElementById("btn-converter")
+const resultadoConversaoElement = document.querySelector("#resultado-conversao")
 
 const calculatorState = {
   displayValue: "0",
@@ -489,29 +490,47 @@ async function atualizarCotacaoNaTela() {
 }
 
 async function converterParaDolar() {
-  if (!btnConverter) return
+  if (!btnConverter || !resultadoConversaoElement || !screen) return
 
-  const valorTexto = screen ? screen.textContent.trim() : "0"
-  const valorEmReais = Number.parseFloat(
-    valorTexto.replace(/\./g, "").replace(",", "."),
-  )
+  const valorEmReais = Number(screen.textContent.trim())
 
   if (!Number.isFinite(valorEmReais)) {
-    alert("Digite um valor válido antes de converter.")
+    resultadoConversaoElement.textContent =
+      "Digite um valor válido antes de converter."
+    resultadoConversaoElement.classList.add("is-error")
     return
   }
 
-  const cotacao = await buscarCotacaoDolar()
+  btnConverter.disabled = true
+  resultadoConversaoElement.classList.remove("is-error")
+  resultadoConversaoElement.textContent = "Consultando a cotação do dólar..."
 
-  if (!cotacao) {
-    alert("Não foi possível buscar a cotação do dólar no momento.")
-    return
+  try {
+    const cotacao = await buscarCotacaoDolar()
+
+    if (!Number.isFinite(cotacao) || cotacao <= 0) {
+      resultadoConversaoElement.textContent =
+        "Não foi possível buscar a cotação do dólar. Tente novamente."
+      resultadoConversaoElement.classList.add("is-error")
+      return
+    }
+
+    const valorEmDolar = valorEmReais / cotacao
+    const formatoBRL = new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    })
+    const formatoUSD = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    })
+
+    resultadoConversaoElement.textContent =
+      `${formatoBRL.format(valorEmReais)} = ${formatoUSD.format(valorEmDolar)} ` +
+      `(cotação: ${formatoBRL.format(cotacao)} por US$ 1)`
+  } finally {
+    btnConverter.disabled = false
   }
-
-  const valorEmDolar = valorEmReais / cotacao
-  alert(
-    `💵 ${valorEmReais.toFixed(2).replace(".", ",")} BRL = $${valorEmDolar.toFixed(2).replace(".", ",")} USD\n💰 Cotação: R$ ${cotacao.toFixed(2).replace(".", ",")}`,
-  )
 }
 
 function init() {
