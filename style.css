@@ -375,6 +375,20 @@ button:focus-visible {
   word-break: break-word;
 }
 
+.history-restore {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  width: 100%;
+}
+
+.history-restore:hover {
+  text-decoration: underline;
+}
+
 .history-empty {
   color: rgba(35, 35, 35, 0.7);
   text-align: center;

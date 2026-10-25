@@ -6,7 +6,7 @@ Uma calculadora feita com HTML, CSS e JavaScript, com histórico de operações 
 
 - Operações de soma, subtração, multiplicação e divisão
 - Entrada por botões ou pelo teclado
-- Histórico de cálculos salvo no navegador, com opção para limpar
+- Histórico de cálculos salvo no navegador: selecione uma operação para restaurar o resultado no visor ou limpe o histórico
 - Cotação atual do dólar em reais e conversão de BRL para USD, com resultado exibido na página
 - Temas com cores do Brasil e dos Estados Unidos, com preferência salva no navegador
 - Validação e tratamento de erros para operações inválidas, divisão por zero e falhas na consulta de cotação

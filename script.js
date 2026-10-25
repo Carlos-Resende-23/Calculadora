@@ -287,9 +287,45 @@ function renderHistory(history) {
   safeHistory.forEach((expression) => {
     const item = document.createElement("li")
     item.className = "history-item"
-    item.textContent = expression
+    const result = getHistoryResult(expression)
+
+    if (result === null) {
+      item.textContent = expression
+    } else {
+      const restoreButton = document.createElement("button")
+      restoreButton.className = "history-restore"
+      restoreButton.type = "button"
+      restoreButton.textContent = expression
+      restoreButton.setAttribute(
+        "aria-label",
+        `Restaurar resultado ${result} da operação ${expression}`,
+      )
+      item.append(restoreButton)
+    }
+
     historyList.append(item)
   })
+}
+
+function getHistoryResult(expression) {
+  const match = expression.match(/= (-?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?)$/i)
+
+  if (!match || !Number.isFinite(Number(match[1]))) {
+    return null
+  }
+
+  return match[1]
+}
+
+function restoreHistoryResult(expression) {
+  const result = getHistoryResult(expression)
+  if (result === null) return
+
+  calculatorState.displayValue = result
+  calculatorState.firstOperand = null
+  calculatorState.operator = null
+  calculatorState.waitingForNextValue = true
+  updateScreen()
 }
 
 function clearHistory() {
@@ -317,6 +353,15 @@ function bindCalculatorEvents() {
 
   if (clearHistoryButton) {
     clearHistoryButton.addEventListener("click", clearHistory)
+  }
+
+  if (historyList) {
+    historyList.addEventListener("click", (event) => {
+      const button = event.target.closest(".history-restore")
+      if (!button) return
+
+      restoreHistoryResult(button.textContent)
+    })
   }
 
   if (atualizarCotacaoButton) {
