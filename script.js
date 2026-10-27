@@ -209,8 +209,8 @@ function handleCalculatorAction(value) {
     return
   }
 
-  if (value === ".") {
-    applyNumber(value)
+  if (value === "." || value === ",") {
+    applyNumber(".")
     return
   }
 
@@ -381,7 +381,7 @@ function bindCalculatorEvents() {
       return
     }
 
-    if (key === ".") {
+    if (key === "." || key === ",") {
       event.preventDefault()
       applyNumber(".")
       return
