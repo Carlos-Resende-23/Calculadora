@@ -1,6 +1,7 @@
 const HISTORY_STORAGE_KEY = "calculator-history"
 const THEME_STORAGE_KEY = "calculator-theme"
 const API_URL = "https://economia.awesomeapi.com.br/json/last/USD-BRL"
+const MAX_HISTORY_ENTRIES = 50
 
 const screen = document.querySelector(".screen")
 const historyList = document.querySelector("#history")
@@ -246,8 +247,9 @@ function addHistoryEntry(expression) {
 
   const history = getHistory()
   history.unshift(expression)
-  saveHistory(history)
-  renderHistory(history)
+  const recentHistory = history.slice(0, MAX_HISTORY_ENTRIES)
+  saveHistory(recentHistory)
+  renderHistory(recentHistory)
 }
 
 function getHistory() {
@@ -258,9 +260,9 @@ function getHistory() {
       return []
     }
 
-    return storedHistory.filter(
-      (item) => typeof item === "string" && item.trim() !== "",
-    )
+    return storedHistory
+      .filter((item) => typeof item === "string" && item.trim() !== "")
+      .slice(0, MAX_HISTORY_ENTRIES)
   } catch {
     return []
   }
@@ -268,7 +270,10 @@ function getHistory() {
 
 function saveHistory(history) {
   try {
-    localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history))
+    localStorage.setItem(
+      HISTORY_STORAGE_KEY,
+      JSON.stringify(history.slice(0, MAX_HISTORY_ENTRIES)),
+    )
   } catch {
     console.warn("Não foi possível salvar o histórico no navegador.")
   }
