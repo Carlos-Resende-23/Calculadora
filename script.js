@@ -21,6 +21,10 @@ const calculatorState = {
   waitingForNextValue: false,
 }
 
+let dadosCotacaoAtual = null
+let cotacaoAtualizadaEm = null
+let requisicaoCotacao = null
+
 function updateScreen() {
   if (!screen) return
 
@@ -452,31 +456,53 @@ function loadTheme() {
   applyTheme(theme)
 }
 
-async function buscarDadosCotacao() {
-  const resposta = await fetch(API_URL, { cache: "no-store" })
-
-  if (!resposta.ok) {
-    throw new Error("Falha ao consultar a cotação.")
+async function buscarDadosCotacao({ atualizar = false } = {}) {
+  if (!atualizar && dadosCotacaoAtual) {
+    return dadosCotacaoAtual
   }
 
-  const dados = await resposta.json()
-  const quote = dados?.USDBRL
-
-  if (!quote || !quote.bid) {
-    throw new Error("Resposta da cotação incompleta.")
+  if (requisicaoCotacao) {
+    return requisicaoCotacao
   }
 
-  return quote
+  const solicitacao = (async () => {
+    const resposta = await fetch(API_URL, { cache: "no-store" })
+
+    if (!resposta.ok) {
+      throw new Error("Falha ao consultar a cotação.")
+    }
+
+    const dados = await resposta.json()
+    const quote = dados?.USDBRL
+    const cotacao = Number.parseFloat(quote?.bid)
+
+    if (!Number.isFinite(cotacao) || cotacao <= 0) {
+      throw new Error("Resposta da cotação incompleta.")
+    }
+
+    dadosCotacaoAtual = quote
+    cotacaoAtualizadaEm = new Date()
+    return quote
+  })()
+
+  requisicaoCotacao = solicitacao
+
+  try {
+    return await solicitacao
+  } finally {
+    if (requisicaoCotacao === solicitacao) {
+      requisicaoCotacao = null
+    }
+  }
 }
 
 async function buscarCotacaoDolar() {
-  try {
-    const dados = await buscarDadosCotacao()
-    return Number.parseFloat(dados.bid)
-  } catch (erro) {
-    console.error("❌ Erro ao buscar cotação:", erro)
-    return null
+  if (!dadosCotacaoAtual) {
+    await atualizarCotacaoNaTela()
   }
+
+  const cotacao = Number.parseFloat(dadosCotacaoAtual?.bid)
+  return Number.isFinite(cotacao) ? cotacao : null
 }
 
 async function atualizarCotacaoNaTela() {
@@ -491,12 +517,16 @@ async function atualizarCotacaoNaTela() {
 
   cotacaoElement.classList.add("is-loading")
   cotacaoElement.classList.remove("has-error")
-  valorCotacaoElement.textContent = "--"
-  variacaoCotacaoElement.textContent = "Buscando dados do mercado..."
-  atualizacaoCotacaoElement.textContent = "Atualizando agora"
+  if (!dadosCotacaoAtual) {
+    valorCotacaoElement.textContent = "--"
+    variacaoCotacaoElement.textContent = "Buscando dados do mercado..."
+    atualizacaoCotacaoElement.textContent = "Atualizando agora"
+  } else {
+    atualizacaoCotacaoElement.textContent = "Atualizando cotação..."
+  }
 
   try {
-    const dados = await buscarDadosCotacao()
+    const dados = await buscarDadosCotacao({ atualizar: true })
     const cotacao = Number.parseFloat(dados.bid)
     const variacao = Number.parseFloat(dados.pctChange)
 
@@ -515,20 +545,25 @@ async function atualizarCotacaoNaTela() {
     variacaoCotacaoElement.textContent = variacaoFormatada
     variacaoCotacaoElement.classList.toggle("is-positive", variacao >= 0)
     variacaoCotacaoElement.classList.toggle("is-negative", variacao < 0)
-    atualizacaoCotacaoElement.textContent = `Atualizado às ${new Date().toLocaleTimeString(
+    atualizacaoCotacaoElement.textContent = `Atualizado às ${cotacaoAtualizadaEm.toLocaleTimeString(
       "pt-BR",
-      {
-        hour: "2-digit",
-        minute: "2-digit",
-      },
+      { hour: "2-digit", minute: "2-digit" },
     )}`
     cotacaoElement.classList.remove("is-loading", "has-error")
   } catch (erro) {
     console.error("❌ Erro ao atualizar cotação:", erro)
-    valorCotacaoElement.textContent = "Indisponível"
-    variacaoCotacaoElement.textContent =
-      "Não foi possível consultar o mercado agora."
-    atualizacaoCotacaoElement.textContent = "Tente novamente em instantes"
+    if (dadosCotacaoAtual && cotacaoAtualizadaEm) {
+      atualizacaoCotacaoElement.textContent =
+        `Falha na atualização. Última cotação às ${cotacaoAtualizadaEm.toLocaleTimeString(
+          "pt-BR",
+          { hour: "2-digit", minute: "2-digit" },
+        )}`
+    } else {
+      valorCotacaoElement.textContent = "Indisponível"
+      variacaoCotacaoElement.textContent =
+        "Não foi possível consultar o mercado agora."
+      atualizacaoCotacaoElement.textContent = "Tente novamente em instantes"
+    }
     cotacaoElement.classList.remove("is-loading")
     cotacaoElement.classList.add("has-error")
   }
