@@ -1,5 +1,6 @@
 const HISTORY_STORAGE_KEY = "calculator-history"
 const THEME_STORAGE_KEY = "calculator-theme"
+const NOTES_STORAGE_KEY = "calculator-notes"
 const API_URL = "https://economia.awesomeapi.com.br/json/last/USD-BRL"
 const MAX_HISTORY_ENTRIES = 50
 
@@ -14,6 +15,7 @@ const atualizarCotacaoButton = document.querySelector("#atualizar-cotacao")
 const themeToggleButton = document.querySelector("#alternar-tema")
 const btnConverter = document.getElementById("btn-converter")
 const resultadoConversaoElement = document.querySelector("#resultado-conversao")
+const notesInput = document.querySelector("#notes")
 
 const calculatorState = {
   displayValue: "0",
@@ -347,6 +349,26 @@ function clearHistory() {
   renderHistory([])
 }
 
+function loadNotes() {
+  if (!notesInput) return
+
+  try {
+    notesInput.value = localStorage.getItem(NOTES_STORAGE_KEY) || ""
+  } catch {
+    console.warn("Não foi possível carregar as anotações salvas no navegador.")
+  }
+}
+
+function saveNotes() {
+  if (!notesInput) return
+
+  try {
+    localStorage.setItem(NOTES_STORAGE_KEY, notesInput.value)
+  } catch {
+    console.warn("Não foi possível salvar as anotações no navegador.")
+  }
+}
+
 function bindCalculatorEvents() {
   const calculatorButtons = document.querySelector(".calc-buttons")
 
@@ -362,6 +384,10 @@ function bindCalculatorEvents() {
 
   if (clearHistoryButton) {
     clearHistoryButton.addEventListener("click", clearHistory)
+  }
+
+  if (notesInput) {
+    notesInput.addEventListener("input", saveNotes)
   }
 
   if (historyList) {
@@ -382,6 +408,13 @@ function bindCalculatorEvents() {
   }
 
   document.addEventListener("keydown", (event) => {
+    if (
+      event.target instanceof HTMLElement &&
+      (event.target.isContentEditable || event.target.matches("input, textarea"))
+    ) {
+      return
+    }
+
     const key = event.key
 
     if (/^[0-9]$/.test(key)) {
@@ -621,6 +654,7 @@ async function converterParaDolar() {
 function init() {
   loadTheme()
   renderHistory(getHistory())
+  loadNotes()
   updateScreen()
   bindCalculatorEvents()
 
