@@ -48,7 +48,17 @@
       </section>
 
       <section class="notes-panel">
-        <label class="notes-heading" for="notes">Anotações</label>
+        <div class="notes-header">
+          <label class="notes-heading" for="notes">Anotações</label>
+          <button
+            id="clear-notes"
+            class="clear-notes"
+            type="button"
+            aria-label="Limpar anotações"
+          >
+            Limpar
+          </button>
+        </div>
         <textarea
           id="notes"
           class="notes-input"

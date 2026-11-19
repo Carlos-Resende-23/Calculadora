@@ -7,6 +7,7 @@ const MAX_HISTORY_ENTRIES = 50
 const screen = document.querySelector(".screen")
 const historyList = document.querySelector("#history")
 const clearHistoryButton = document.querySelector("#clear-history")
+const clearNotesButton = document.querySelector("#clear-notes")
 const cotacaoElement = document.querySelector("#cotacao-dolar")
 const valorCotacaoElement = document.querySelector("#valor-cotacao")
 const variacaoCotacaoElement = document.querySelector("#variacao-cotacao")
@@ -369,6 +370,18 @@ function saveNotes() {
   }
 }
 
+function clearNotes() {
+  if (!notesInput) return
+
+  notesInput.value = ""
+
+  try {
+    localStorage.removeItem(NOTES_STORAGE_KEY)
+  } catch {
+    console.warn("Não foi possível limpar as anotações no navegador.")
+  }
+}
+
 function bindCalculatorEvents() {
   const calculatorButtons = document.querySelector(".calc-buttons")
 
@@ -388,6 +401,10 @@ function bindCalculatorEvents() {
 
   if (notesInput) {
     notesInput.addEventListener("input", saveNotes)
+  }
+
+  if (clearNotesButton) {
+    clearNotesButton.addEventListener("click", clearNotes)
   }
 
   if (historyList) {

@@ -88,10 +88,16 @@ button:focus-visible {
   padding: 18px 20px;
 }
 
+.notes-header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
 .notes-heading {
   font-size: 20px;
   font-weight: 700;
-  margin-bottom: 12px;
 }
 
 .notes-input {
@@ -389,7 +395,8 @@ button:focus-visible {
   margin-bottom: 16px;
 }
 
-.clear-history {
+.clear-history,
+.clear-notes {
   background: rgba(255, 255, 255, 0.6);
   border: 1px solid rgba(35, 35, 35, 0.2);
   border-radius: 8px;
@@ -400,7 +407,8 @@ button:focus-visible {
   transition: background-color 0.15s ease;
 }
 
-.clear-history:hover {
+.clear-history:hover,
+.clear-notes:hover {
   background: rgba(255, 255, 255, 0.9);
 }
 
