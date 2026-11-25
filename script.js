@@ -56,12 +56,7 @@ function resetCalculator() {
 }
 
 function formatResult(value) {
-  if (!Number.isFinite(value)) {
-    return "Erro"
-  }
-
-  const rounded = Number(value.toFixed(10))
-  return String(rounded)
+  return window.CalculatorCore.formatResult(value)
 }
 
 function applyNumber(value) {
@@ -138,21 +133,7 @@ function handleOperator(nextOperator) {
 }
 
 function calculate(leftValue, rightValue, operator) {
-  switch (operator) {
-    case "+":
-      return leftValue + rightValue
-    case "−":
-      return leftValue - rightValue
-    case "×":
-      return leftValue * rightValue
-    case "÷":
-      if (rightValue === 0) {
-        throw new Error("Divisão por zero")
-      }
-      return leftValue / rightValue
-    default:
-      return rightValue
-  }
+  return window.CalculatorCore.calculate(leftValue, rightValue, operator)
 }
 
 function evaluateExpression() {

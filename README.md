@@ -36,3 +36,11 @@ Uma calculadora feita com HTML, CSS e JavaScript, com histórico de operações 
 ## Por que `node script.js` não funciona?
 
 Este projeto é executado no navegador. O arquivo `script.js` acessa recursos do navegador, como `document` e `localStorage`, que não existem no ambiente Node.js. Por isso, execute o `index.html` no navegador em vez de rodar o script diretamente com Node.
+
+## Testes
+
+As regras puras da calculadora podem ser validadas sem abrir o navegador:
+
+```bash
+node --test
+```
